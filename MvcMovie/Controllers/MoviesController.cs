@@ -30,7 +30,6 @@ public class MoviesController : Controller
 
         return View();
     }
-
     
     // GET: Movies/Create
     public IActionResult Create()
@@ -119,27 +118,6 @@ public class MoviesController : Controller
         }
 
         return View(movie);
-    }
-
-    // GET: Movies/Delete/5
-    public async Task<IActionResult> Delete(int? id)
-    {
-        if (id == null)
-        {
-            return NotFound();
-        }
-
-        var movie = await _context.Movies
-            .FirstOrDefaultAsync(m => m.Id == id);
-        if (movie == null)
-        {
-            return NotFound();
-        }
-
-        _context.Movies.Remove(movie);
-        await _context.SaveChangesAsync();
-
-        return View();
     }
 
     // POST: Movies/Delete/5
