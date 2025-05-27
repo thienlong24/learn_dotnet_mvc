@@ -1,0 +1,100 @@
+﻿@model MvcMovie.Models.Movie
+
+@{
+    ViewData["Title"] = "Edit Movie";
+}
+
+<div class="container mt-4">
+    <h1 class="text-center mb-4">Edit Movie</h1>
+    <form asp-controller="Movies" asp-action="Edit" method="post" class="needs-validation" novalidate>
+        <input type="hidden" asp-for="Id" />
+        <div class="mb-3">
+            <label for="Title" class="form-label">Title</label>
+            <input type="text" class="form-control" id="Title" asp-for="Title" placeholder="Enter movie title" required style="background-color: #34495e; color: #ecf0f1; border: 1px solid #2c3e50;">
+        </div>
+        <div class="mb-3">
+            <label for="ReleaseDate" class="form-label">Release Date</label>
+            <input type="date" class="form-control" id="ReleaseDate" asp-for="ReleaseDate" min="1900-01-01" max="@DateTime.Now.ToString("yyyy-MM-dd")" required style="background-color: #34495e; color: #ecf0f1; border: 1px solid #2c3e50;">
+        </div>
+        <div class="mb-3">
+            <label for="Genre" class="form-label">Genre</label>
+            <select id="Genre" name="Genre" class="form-select" multiple required style="background-color: #34495e; color: #ecf0f1; border: 1px solid #2c3e50;">
+                @foreach (var genre in Enum.GetValues(typeof(MvcMovie.Models.MovieGenre)))
+                {
+                    var isSelected = Model.Genre?.Contains(genre.ToString()) == true ? "selected" : "";
+                    <option value="@genre" selected="@isSelected">@genre</option>
+                }
+            </select>
+        </div>
+        <div class="mb-3">
+            <label for="Price" class="form-label">Price</label>
+            <input type="text" class="form-control" id="Price" asp-for="Price" placeholder="Enter movie price" required style="background-color: #34495e; color: #ecf0f1; border: 1px solid #2c3e50;">
+        </div>
+        <button type="submit" class="btn btn-primary">Save</button>
+        <a asp-action="Index" class="btn btn-secondary">Cancel</a>
+    </form>
+</div>
+
+<div id="toast" class="toast"></div>
+
+<style>
+    .toast {
+        position: fixed;
+        bottom: 20px;
+        right: 20px;
+        min-width: 250px;
+        padding: 15px;
+        border-radius: 5px;
+        color: #fff;
+        font-size: 14px;
+        box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+        z-index: 1000;
+        display: none; /* Hidden by default */
+    }
+
+    .toast.success {
+        background-color: #28a745;
+    }
+
+    .toast.error {
+        background-color: #dc3545;
+    }
+</style>
+
+<script>
+    const form = document.querySelector("form");
+    const toast = document.getElementById("toast");
+
+    form.addEventListener("submit", async (event) => {
+        event.preventDefault();
+        try {
+            const response = await fetch(event.target.action, {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/x-www-form-urlencoded"
+                },
+                body: new URLSearchParams(new FormData(event.target)).toString()
+            });
+
+            if (response.ok) {
+                const data = await response.json();
+                showToast(`Movie updated successfully! Id=${data.id}, Title=${data.title}`, "success");
+            } else {
+                const errorData = await response.json();
+                showToast(`Failed to update movie: ${errorData.error}`, "error");
+            }
+        } catch (error) {
+            showToast(`Error updating movie: ${error.message}`, "error");
+        }
+    });
+
+    function showToast(message, type) {
+        toast.textContent = message;
+        toast.className = `toast ${type}`;
+        toast.style.display = "block";
+
+        setTimeout(() => {
+            toast.style.display = "none";
+        }, 3000); // Hide toast after 3 seconds
+    }
+</script>

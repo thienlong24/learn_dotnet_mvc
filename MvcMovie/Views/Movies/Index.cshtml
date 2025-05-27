@@ -1,0 +1,117 @@
+﻿@model IEnumerable<MvcMovie.Models.Movie>
+
+@{
+    ViewData["Title"] = "Movie List";
+    var successMessage = Context.Request.Query["successMessage"];
+}
+
+<div class="container mt-4">
+    <h1 class="text-center mb-4">Movie List</h1>
+    <a class="btn btn-primary mb-3" asp-controller="Movies" asp-action="Create">Create New Movie</a>
+    <table class="table table-hover">
+        <thead style="background-color: #2c3e50; color: #ecf0f1;">
+            <tr>
+                <th>Title</th>
+                <th>Release Date</th>
+                <th>Genre</th>
+                <th>Price</th>
+                <th>Actions</th>
+            </tr>
+        </thead>
+        <tbody style="background-color: #34495e; color: #ecf0f1;">
+            @foreach (var movie in Model)
+            {
+                <tr id="movie-row-@movie.Id">
+                    <td>@movie.Title</td>
+                    <td>@movie.ReleaseDate.ToShortDateString()</td>
+                    <td>@movie.Genre</td>
+                    <td>@movie.Price.ToString("C")</td>
+                    <td>
+                        <a class="btn btn-info btn-sm" asp-action="Details" asp-route-id="@movie.Id" style="background-color: #4ca1af; border-color: #4ca1af;">View</a>
+                        <a class="btn btn-warning btn-sm" asp-action="Edit" asp-route-id="@movie.Id" style="background-color: #f39c12; border-color: #f39c12;">Edit</a>
+                        <button class="btn btn-danger btn-sm" onclick="deleteMovie('@movie.Id', '@movie.Title')" style="background-color: #e74c3c; border-color: #e74c3c;">Delete</button>
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+</div>
+
+@if (!string.IsNullOrEmpty(successMessage))
+{
+    <div id="toast" class="toast success" style="display: block;">@successMessage</div>
+}
+
+<style>
+    .toast {
+        position: fixed;
+        bottom: 20px;
+        right: 20px;
+        min-width: 250px;
+        padding: 15px;
+        border-radius: 5px;
+        color: #fff;
+        font-size: 14px;
+        box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+        z-index: 1000;
+        display: none; /* Hidden by default */
+    }
+
+    .toast.success {
+        background-color: #28a745;
+    }
+
+    .toast.error {
+        background-color: #dc3545;
+    }
+
+    .table-hover tbody tr:hover {
+        background-color: #3b8d99; /* Highlight row on hover */
+    }
+</style>
+
+<script>
+    async function deleteMovie(movieId, movieTitle) {
+        if (confirm(`Are you sure you want to delete the movie "${movieTitle}"?`)) {
+            try {
+                const response = await fetch(`/Movies/Delete/${movieId}`, {
+                    method: "DELETE",
+                    headers: {
+                        "Content-Type": "application/json"
+                    }
+                });
+
+                if (response.ok) {
+                    // Remove the movie row from the table
+                    document.getElementById(`movie-row-${movieId}`).remove();
+                    showToast(`Movie "${movieTitle}" deleted successfully!`, "success");
+                } else {
+                    const errorData = await response.json();
+                    showToast(`Failed to delete movie: ${errorData.error || "Unknown error"}`, "error");
+                }
+            } catch (error) {
+                showToast(`Error deleting movie: ${error.message}`, "error");
+            }
+        }
+    }
+
+    function showToast(message, type) {
+        const toast = document.getElementById("toast");
+        toast.textContent = message;
+        toast.className = `toast ${type}`;
+        toast.style.display = "block";
+
+        setTimeout(() => {
+            toast.style.display = "none";
+        }, 3000); // Hide toast after 3 seconds
+    }
+
+    // Automatically hide the toast after 3 seconds (for successMessage on page load)
+    const toast = document.getElementById("toast");
+    if (toast) {
+        setTimeout(() => {
+            toast.style.display = "none";
+        }, 3000);
+    }
+</script>
+
