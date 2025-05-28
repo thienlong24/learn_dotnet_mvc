@@ -3,7 +3,7 @@ using Microsoft.EntityFrameworkCore;
 using Serilog;
 
 Log.Logger = new LoggerConfiguration()
-    .WriteTo.File("Logs/log-.txt", rollingInterval: RollingInterval.Infinite)
+    .WriteTo.File("Logs/log-.txt", rollingInterval: RollingInterval.Day)
     .CreateLogger();
 
 var builder = WebApplication.CreateBuilder(args);
