@@ -19,16 +19,15 @@ public class MoviesController : Controller
 
     public async Task<IActionResult> Index()
     {
-        var movies = await _context.Movies.ToListAsync();
-        return View(movies);
-    }
-
-    public IActionResult Welcome(string name, int numTimes = 1)
-    {
-        ViewData["Message"] = "Hello " + name;
-        ViewData["NumTimes"] = numTimes;
-
-        return View();
+        try
+        {
+            var movies = await _context.Movies.ToListAsync();
+            _logger.LogInformation("Fetched {Count} movies from the database", movies.Count);
+            return View(movies);
+        }
+        finally { 
+            _logger.LogInformation("Index action completed");
+        }
     }
     
     // GET: Movies/Create
