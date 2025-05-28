@@ -22,6 +22,7 @@ public class MoviesController : Controller
         try
         {
             var movies = await _context.Movies.ToListAsync();
+
             _logger.LogInformation("Fetched {Count} movies from the database", movies.Count);
             return View(movies);
         } catch (Exception ex)
