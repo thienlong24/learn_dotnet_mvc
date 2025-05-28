@@ -5,7 +5,6 @@
 <link rel="stylesheet" href="~/css/movies.css" />
 
 <div class="text-center">
-    <h1 class="display-4">@ViewData["Message"]</h1>
     <div class="container mt-4">
         <h1 class="text-center mb-4">Add a New Movie</h1>
         <form asp-controller="Movies" asp-action="Create" method="post" class="needs-validation" novalidate>
@@ -38,7 +37,7 @@
     <!-- Toast container -->
     <div id="toast" class="toast"></div>
 
-    <script>
+    @* <script>
         const form = document.querySelector("form");
         const toast = document.getElementById("toast");
 
@@ -75,5 +74,14 @@
                 toast.style.display = "none";
             }, 3000); // Hide toast after 3 seconds
         }
-    </script>
+    </script> *@
 </div>
+
+@section Scripts {
+    <script src="~/js/movie-shared.js"></script>
+    <script>
+        bindAjaxForm("form", function(data) {
+            window.location.href = `/Movies?successMessage=Movie created successfully! Id=${data.id}, Title=${data.title}`;
+        });
+    </script>
+}

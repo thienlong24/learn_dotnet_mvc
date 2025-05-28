@@ -49,7 +49,7 @@
 
 <div id="toast" class="toast"></div>
 
-<script>
+@* <script>
     const form = document.querySelector("form");
     const toast = document.getElementById("toast");
 
@@ -85,4 +85,13 @@
             toast.style.display = "none";
         }, 3000); // Hide toast after 3 seconds
     }
-</script>
+</script> *@
+
+@section Scripts {
+    <script src="~/js/movie-shared.js"></script>
+    <script>
+        bindAjaxForm("form", function(data) {
+            showToast(`Movie updated successfully! Id=${data.id}, Title=${data.title}`, "success");
+        });
+    </script>
+}
