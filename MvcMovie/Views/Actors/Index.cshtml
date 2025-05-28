@@ -25,21 +25,21 @@
         </tr>
     </thead>
     <tbody>
-@foreach (var item in Model) {
+    @foreach (var actor in Model) {
         <tr>
             <td>
-                @Html.DisplayFor(modelItem => item.FullName)
+                @Html.DisplayFor(modelItem => actor.FullName)
             </td>
             <td>
-                @Html.DisplayFor(modelItem => item.DateOfBirth)
+                @Html.DisplayFor(modelItem => actor.DateOfBirth)
             </td>
             <td>
-                @Html.DisplayFor(modelItem => item.Gender)
+                @Html.DisplayFor(modelItem => actor.Gender)
             </td>
             <td>
-                <a asp-action="Edit" asp-route-id="@item.Id">Edit</a> |
-                <a asp-action="Details" asp-route-id="@item.Id">Details</a> |
-                <a asp-action="Delete" asp-route-id="@item.Id">Delete</a>
+                <a class="btn btn-info btn-sm" asp-action="Details" asp-route-id="@actor.Id" style="background-color: #4ca1af; border-color: #4ca1af;">View</a>
+                <a class="btn btn-warning btn-sm" asp-action="Edit" asp-route-id="@actor.Id" style="background-color: #f39c12; border-color: #f39c12;">Edit</a>
+                <a class="btn btn-warning btn-sm" asp-action="Delete" asp-route-id="@actor.Id" style="background-color: #e74c3c; border-color: #e74c3c;">Delete</a>
             </td>
         </tr>
 }
