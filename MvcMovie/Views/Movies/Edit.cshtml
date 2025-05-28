@@ -2,7 +2,13 @@
 
 @{
     ViewData["Title"] = "Edit Movie";
+    // Split Model.Genre into a list, trimming whitespace
+    var selectedGenres = (Model.Genre ?? "")
+        .Split(',', StringSplitOptions.RemoveEmptyEntries)
+        .Select(g => g.Trim())
+        .ToList();
 }
+<link rel="stylesheet" href="~/css/movies.css" />
 
 <div class="container mt-4">
     <h1 class="text-center mb-4">Edit Movie</h1>
@@ -21,8 +27,14 @@
             <select id="Genre" name="Genre" class="form-select" multiple required style="background-color: #34495e; color: #ecf0f1; border: 1px solid #2c3e50;">
                 @foreach (var genre in Enum.GetValues(typeof(MvcMovie.Models.MovieGenre)))
                 {
-                    var isSelected = Model.Genre?.Contains(genre.ToString()) == true ? "selected" : "";
-                    <option value="@genre" selected="@isSelected">@genre</option>
+                    var isSelected = selectedGenres.Contains(genre.ToString());
+                    if (isSelected)
+                    {
+                        <option value="@genre" selected>@genre</option>
+                    } else
+                    {
+                        <option value="@genre">@genre</option>
+                    }
                 }
             </select>
         </div>
@@ -36,30 +48,6 @@
 </div>
 
 <div id="toast" class="toast"></div>
-
-<style>
-    .toast {
-        position: fixed;
-        bottom: 20px;
-        right: 20px;
-        min-width: 250px;
-        padding: 15px;
-        border-radius: 5px;
-        color: #fff;
-        font-size: 14px;
-        box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
-        z-index: 1000;
-        display: none; /* Hidden by default */
-    }
-
-    .toast.success {
-        background-color: #28a745;
-    }
-
-    .toast.error {
-        background-color: #dc3545;
-    }
-</style>
 
 <script>
     const form = document.querySelector("form");

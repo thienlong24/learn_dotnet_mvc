@@ -5,6 +5,8 @@
     var successMessage = Context.Request.Query["successMessage"];
 }
 
+<link rel="stylesheet" href="~/css/movies.css" />
+
 <div class="container mt-4">
     <h1 class="text-center mb-4">Movie List</h1>
     <a class="btn btn-primary mb-3" asp-controller="Movies" asp-action="Create">Create New Movie</a>
@@ -41,34 +43,6 @@
 {
     <div id="toast" class="toast success" style="display: block;">@successMessage</div>
 }
-
-<style>
-    .toast {
-        position: fixed;
-        bottom: 20px;
-        right: 20px;
-        min-width: 250px;
-        padding: 15px;
-        border-radius: 5px;
-        color: #fff;
-        font-size: 14px;
-        box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
-        z-index: 1000;
-        display: none; /* Hidden by default */
-    }
-
-    .toast.success {
-        background-color: #28a745;
-    }
-
-    .toast.error {
-        background-color: #dc3545;
-    }
-
-    .table-hover tbody tr:hover {
-        background-color: #3b8d99; /* Highlight row on hover */
-    }
-</style>
 
 <script>
     async function deleteMovie(movieId, movieTitle) {

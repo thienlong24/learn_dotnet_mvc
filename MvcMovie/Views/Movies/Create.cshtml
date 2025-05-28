@@ -2,50 +2,10 @@
     ViewData["Title"] = "Movies - Create";
     ViewData["Message"] = "Create a new movie";
 }
+<link rel="stylesheet" href="~/css/movies.css" />
 
 <div class="text-center">
     <h1 class="display-4">@ViewData["Message"]</h1>
-    <style>
-        form > div {
-            display: flex;
-            flex-flow: row nowrap;
-            align-items: center;
-            margin-bottom: 0.5em;
-        }
-
-        form > div > label {
-            width: 100px;
-            text-align: right;
-            margin-right: 0.5em;
-        }
-
-        form > div > input, form > div > select {
-            flex: 1;
-        }
-
-        /* Toast styles */
-        .toast {
-            position: fixed;
-            bottom: 20px;
-            right: 20px;
-            min-width: 250px;
-            padding: 15px;
-            border-radius: 5px;
-            color: #fff;
-            font-size: 14px;
-            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
-            z-index: 1000;
-            display: none;
-        }
-
-        .toast.success {
-            background-color: #28a745;
-        }
-
-        .toast.error {
-            background-color: #dc3545;
-        }
-    </style>
     <div class="container mt-4">
         <h1 class="text-center mb-4">Add a New Movie</h1>
         <form asp-controller="Movies" asp-action="Create" method="post" class="needs-validation" novalidate>

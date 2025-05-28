@@ -1,0 +1,52 @@
+.toast {
+    position: fixed;
+    bottom: 20px;
+    right: 20px;
+    min-width: 250px;
+    padding: 15px;
+    border-radius: 5px;
+    color: #fff;
+    font-size: 14px;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+    z-index: 1000;
+    display: none; /* Hidden by default */
+}
+
+.toast.success {
+    background-color: #28a745;
+}
+
+.toast.error {
+    background-color: #dc3545;
+}
+
+.table-hover tbody tr:hover {
+    background-color: #3b8d99; /* Highlight row on hover */
+}
+
+form > div {
+    display: flex;
+    flex-flow: row nowrap;
+    align-items: center;
+    margin-bottom: 0.5em;
+}
+
+form > div > label {
+    width: 100px;
+    text-align: right;
+    margin-right: 0.5em;
+}
+
+form > div > input,
+form > div > select {
+    flex: 1;
+}
+
+/* Placeholder text color for dark input backgrounds */
+input::placeholder,
+input::-webkit-input-placeholder,
+input:-ms-input-placeholder,
+input::-ms-input-placeholder {
+    color: #ecf0f1;
+    opacity: 1; /* Ensure full opacity for cross-browser consistency */
+}

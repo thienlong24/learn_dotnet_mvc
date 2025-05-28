@@ -24,6 +24,10 @@ public class MoviesController : Controller
             var movies = await _context.Movies.ToListAsync();
             _logger.LogInformation("Fetched {Count} movies from the database", movies.Count);
             return View(movies);
+        } catch (Exception ex)
+        {
+            _logger.LogError(ex, "An error occurred while fetching movies from the database");
+            return View(new List<Movie>());
         }
         finally { 
             _logger.LogInformation("Index action completed");
