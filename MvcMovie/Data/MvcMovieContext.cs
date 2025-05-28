@@ -20,6 +20,7 @@ namespace MvcMovie.Data
                 .HasIndex(m => m.Title)
                 .IsUnique(); // Enforces the unique constraint on Title
         }
+        public DbSet<MvcMovie.Models.Actor> Actor { get; set; } = default!;
     }
 }
 
