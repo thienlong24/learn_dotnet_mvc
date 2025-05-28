@@ -22,3 +22,8 @@ rad.json
 TestResults.xml
 bin/
 obj/
+Logs/
+.vs/
+/MvcMovie/MvcMovie.csproj.user
+/MvcMovie/MvcMovie.db-shm
+/MvcMovie/MvcMovie.db-wal
