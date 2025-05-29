@@ -44,48 +44,50 @@
     <div id="toast" class="toast success" style="display: block;">@successMessage</div>
 }
 
-<script>
-    async function deleteMovie(movieId, movieTitle) {
-        if (confirm(`Are you sure you want to delete the movie "${movieTitle}"?`)) {
-            try {
-                const response = await fetch(`/Movies/Delete/${movieId}`, {
-                    method: "DELETE",
-                    headers: {
-                        "Content-Type": "application/json"
-                    }
-                });
+@section Scripts {
+    <script src="~/js/toast-util.js"></script>
+    <script>
+        async function deleteMovie(movieId, movieTitle) {
+            if (confirm(`Are you sure you want to delete the movie "${movieTitle}"?`)) {
+                try {
+                    const response = await fetch(`/Movies/Delete/${movieId}`, {
+                        method: "DELETE",
+                        headers: {
+                            "Content-Type": "application/json"
+                        }
+                    });
 
-                if (response.ok) {
-                    // Remove the movie row from the table
-                    document.getElementById(`movie-row-${movieId}`).remove();
-                    showToast(`Movie "${movieTitle}" deleted successfully!`, "success");
-                } else {
-                    const errorData = await response.json();
-                    showToast(`Failed to delete movie: ${errorData.error || "Unknown error"}`, "error");
+                    if (response.ok) {
+                        // Remove the movie row from the table
+                        document.getElementById(`movie-row-${movieId}`).remove();
+                        showToast(`Movie "${movieTitle}" deleted successfully!`, "success");
+                    } else {
+                        const errorData = await response.json();
+                        showToast(`Failed to delete movie: ${errorData.error || "Unknown error"}`, "error");
+                    }
+                } catch (error) {
+                    showToast(`Error deleting movie: ${error.message}`, "error");
                 }
-            } catch (error) {
-                showToast(`Error deleting movie: ${error.message}`, "error");
             }
         }
-    }
 
-    function showToast(message, type) {
+        // function showToast(message, type) {
+        //     const toast = document.getElementById("toast");
+        //     toast.textContent = message;
+        //     toast.className = `toast ${type}`;
+        //     toast.style.display = "block";
+
+        //     setTimeout(() => {
+        //         toast.style.display = "none";
+        //     }, 3000); Hide toast after 3 seconds
+        // }
+
+        // Automatically hide the toast after 3 seconds (for successMessage on page load)
         const toast = document.getElementById("toast");
-        toast.textContent = message;
-        toast.className = `toast ${type}`;
-        toast.style.display = "block";
-
-        setTimeout(() => {
-            toast.style.display = "none";
-        }, 3000); // Hide toast after 3 seconds
-    }
-
-    // Automatically hide the toast after 3 seconds (for successMessage on page load)
-    const toast = document.getElementById("toast");
-    if (toast) {
-        setTimeout(() => {
-            toast.style.display = "none";
-        }, 3000);
-    }
-</script>
-
+        if (toast) {
+            setTimeout(() => {
+                toast.style.display = "none";
+            }, 3000);
+        }
+    </script>
+} 

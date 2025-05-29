@@ -36,51 +36,12 @@
 
     <!-- Toast container -->
     <div id="toast" class="toast"></div>
-
-    @* <script>
-        const form = document.querySelector("form");
-        const toast = document.getElementById("toast");
-
-        form.addEventListener("submit", async (event) => {
-            event.preventDefault();
-            try {
-                const response = await fetch(event.target.action, {
-                    method: "POST",
-                    headers: {
-                        "Content-Type": "application/x-www-form-urlencoded"
-                    },
-                    body: new URLSearchParams(new FormData(event.target)).toString()
-                });
-
-                if (response.ok) {
-                    const data = await response.json();
-                    // Redirect to Movies list with a success message
-                    window.location.href = `/Movies?successMessage=Movie created successfully! Id=${data.id}, Title=${data.title}`;
-                } else {
-                    const errorData = await response.json();
-                    showToast(`Failed to create movie: ${errorData.error}`, "error");
-                }
-            } catch (error) {
-                showToast(`Error creating movie: ${error.message}`, "error");
-            }
-        });
-
-        function showToast(message, type) {
-            toast.textContent = message;
-            toast.className = `toast ${type}`;
-            toast.style.display = "block";
-
-            setTimeout(() => {
-                toast.style.display = "none";
-            }, 3000); // Hide toast after 3 seconds
-        }
-    </script> *@
 </div>
 
 @section Scripts {
-    <script src="~/js/movie-shared.js"></script>
+    <script src="~/js/toast-util.js"></script>
     <script>
-        bindAjaxForm("form", function(data) {
+        bindAjaxForm("form", "Movie", function(data) {
             window.location.href = `/Movies?successMessage=Movie created successfully! Id=${data.id}, Title=${data.title}`;
         });
     </script>

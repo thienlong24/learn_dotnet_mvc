@@ -1,4 +1,4 @@
-// Toast utility
+﻿// Toast utility
 function showToast(message, type) {
     const toast = document.getElementById("toast");
     if (!toast) return;
@@ -11,7 +11,7 @@ function showToast(message, type) {
 }
 
 // AJAX form handler for create/edit
-function bindAjaxForm(formSelector, onSuccess) {
+function bindAjaxForm(formSelector, object, onSuccess) {
     const form = document.querySelector(formSelector);
     const toast = document.getElementById("toast");
     if (!form) return;
@@ -34,10 +34,10 @@ function bindAjaxForm(formSelector, onSuccess) {
                 }
             } else {
                 const errorData = await response.json();
-                showToast(`Failed to save movie: ${errorData.error}`, "error");
+                showToast(`Failed to save ${object}: ${errorData.error}`, "error");
             }
         } catch (error) {
-            showToast(`Error saving movie: ${error.message}`, "error");
+            showToast(`Error saving ${object}: ${error.message}`, "error");
         }
     });
 }

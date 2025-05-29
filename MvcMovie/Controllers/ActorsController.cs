@@ -55,9 +55,9 @@ namespace MvcMovie.Controllers
             {
                 _context.Add(actor);
                 await _context.SaveChangesAsync();
-                return RedirectToAction(nameof(Index));
+                return Json(new { id = actor.Id, fullName = actor.FullName });
             }
-            return View(actor);
+            return BadRequest(new { error = "Invalid data" });
         }
 
         // GET: Actors/Edit/5
@@ -106,9 +106,9 @@ namespace MvcMovie.Controllers
                         throw;
                     }
                 }
-                return RedirectToAction(nameof(Index));
+                return Json(new { id = actor.Id, fullName = actor.FullName });
             }
-            return View(actor);
+            return BadRequest(new { error = "Invalid data" });
         }
 
         // GET: Actors/Delete/5
@@ -141,7 +141,7 @@ namespace MvcMovie.Controllers
             }
 
             await _context.SaveChangesAsync();
-            return RedirectToAction(nameof(Index));
+            return Json(new { id = actor?.Id, fullName = actor?.FullName });
         }
 
         private bool ActorExists(int id)

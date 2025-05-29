@@ -33,10 +33,25 @@
             </dd>
         </dl>
     
-        <form asp-action="Delete">
+        <form asp-controller="Actors" asp-action="Delete" method="delete" class="needs-validation" novalidate>
             <input type="hidden" asp-for="Id" />
             <input type="submit" value="Delete" class="btn btn-danger" />
             <a asp-action="Index" class="btn btn-secondary">Back to List</a>
         </form>
+
+        <!-- Toast container -->
+        <div id="toast" class="toast"></div>
     </div>
+
+    @section Scripts {
+        <script src="~/js/toast-util.js"></script>
+        <script>
+            bindAjaxForm("form", "Actor", function(data) {
+                window.location.href = `/Actors?successMessage=Actor deleted successfully! Id=${data.id}, Name=${data.fullName}`;
+            });
+        </script>
+        @{
+            await Html.RenderPartialAsync("_ValidationScriptsPartial");
+        }
+    }
 </div>

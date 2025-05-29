@@ -2,7 +2,10 @@
 
 @{
     ViewData["Title"] = "Index";
+    var successMessage = Context.Request.Query["successMessage"];
 }
+
+<link rel="stylesheet" href="~/css/movies.css" />
 
 <div class="container mt-4">
     <h1 class="text-center mb-4">Actors List</h1>
@@ -47,3 +50,21 @@
         </tbody>
     </table>
 </div>
+
+@if (!string.IsNullOrEmpty(successMessage))
+{
+    <div id="toast" class="toast success" style="display: block;">@successMessage</div>
+}
+
+@section Scripts {
+    <script src="~/js/toast-util.js"></script>
+    <script>
+        // Automatically hide the toast after 3 seconds (for successMessage on page load)
+        const toast = document.getElementById("toast");
+        if (toast) {
+            setTimeout(() => {
+                toast.style.display = "none";
+            }, 3000);
+        }
+    </script>
+}

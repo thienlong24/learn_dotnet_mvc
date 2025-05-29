@@ -38,11 +38,15 @@
         </div>
     </div>
 
-    <div>
-        
-    </div>
+    <div id="toast" class="toast"></div>
 
     @section Scripts {
+        <script src="~/js/toast-util.js"></script>
+        <script>
+            bindAjaxForm("form", "Actor", function(data) {
+                showToast(`Actor updated successfully! Id=${data.id}, Name=${data.fullName}`, "success");
+            });
+        </script>
         @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
     }
 </div>
