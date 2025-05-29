@@ -1,5 +1,7 @@
-using MvcMovie.Data;
+using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.EntityFrameworkCore;
+using MvcMovie.Data;
+using Okta.AspNetCore;
 using Serilog;
 
 Log.Logger = new LoggerConfiguration()
@@ -26,7 +28,26 @@ builder.Services.AddDbContext<MvcMovieContext>(options =>
 builder.Services.AddControllersWithViews();
 builder.Host.UseSerilog();
 
+builder.Services.AddAuthentication(options =>
+{
+    options.DefaultAuthenticateScheme = OktaDefaults.MvcAuthenticationScheme;
+    options.DefaultSignInScheme = CookieAuthenticationDefaults.AuthenticationScheme; // Use cookies for sign-in
+    options.DefaultChallengeScheme = OktaDefaults.MvcAuthenticationScheme;
+})
+.AddCookie(CookieAuthenticationDefaults.AuthenticationScheme) // Register cookie auth
+.AddOktaMvc(new OktaMvcOptions
+{
+    OktaDomain = builder.Configuration["Okta:Domain"],
+    ClientId = builder.Configuration["Okta:ClientId"],
+    ClientSecret = builder.Configuration["Okta:ClientSecret"],
+    AuthorizationServerId = "default",
+    Scope = ["openid", "profile", "email"]
+});
+
 var app = builder.Build();
+
+app.UseAuthentication();
+app.UseAuthorization();
 
 // Configure the HTTP request pipeline.
 if (!app.Environment.IsDevelopment())

@@ -9,7 +9,7 @@ namespace MvcMovie.Controllers;
 public class MoviesController : Controller
 {
     private readonly ILogger<MoviesController> _logger;
-     private readonly MvcMovieContext _context;
+    private readonly MvcMovieContext _context;
 
     public MoviesController(MvcMovieContext context, ILogger<MoviesController> logger)
     {
@@ -17,22 +17,26 @@ public class MoviesController : Controller
         _context = context;
     }
 
-    public async Task<IActionResult> Index()
+    public async Task<IActionResult> Index(int page = 1, int pageSize = 10)
     {
-        try
-        {
-            var movies = await _context.Movies.ToListAsync();
+        var totalMovies = await _context.Movies.CountAsync();
+        var totalPages = (int)Math.Ceiling(totalMovies / (double)pageSize);
 
-            _logger.LogInformation("Fetched {Count} movies from the database", movies.Count);
-            return View(movies);
-        } catch (Exception ex)
+        var movies = await _context.Movies
+            .OrderBy(m => m.Title)
+            .Skip((page - 1) * pageSize)
+            .Take(pageSize)
+            .ToListAsync();
+
+        var viewModel = new MovieIndexViewModel
         {
-            _logger.LogError(ex, "An error occurred while fetching movies from the database");
-            return View(new List<Movie>());
-        }
-        finally { 
-            _logger.LogInformation("Index action completed");
-        }
+            Movies = movies,
+            PageNumber = page,
+            TotalPages = totalPages,
+            PageSize = pageSize
+        };
+
+        return View(viewModel);
     }
     
     // GET: Movies/Create

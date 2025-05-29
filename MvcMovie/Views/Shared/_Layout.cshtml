@@ -28,6 +28,17 @@
                         </li>
                     </ul>
                 </div>
+
+                @if (!User.Identity.IsAuthenticated)
+                {
+                    <a class="nav-link" href="/Account/Login">Sign In</a>
+                }
+                else
+                {
+                    <form asp-controller="Account" asp-action="SignOut" method="post" style="display:inline;">
+                        <button type="submit" class="nav-link btn btn-link" style="display:inline; padding:0;">Sign Out</button>
+                    </form>
+                }
             </div>
         </nav>
     </header>
