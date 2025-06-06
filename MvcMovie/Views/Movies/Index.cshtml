@@ -11,7 +11,10 @@
 <div class="container mt-4">
     <h1 class="text-center mb-4">Movie List</h1>
     <div class="mb-3 d-flex justify-content-between align-items-center">
-        <a class="btn btn-primary" asp-controller="Movies" asp-action="Create">Create New Movie</a>
+        <div class="btn-group">
+            <a class="btn btn-primary" asp-controller="Movies" asp-action="Create">Create New Movie</a>
+            <a class="btn btn-primary" asp-controller="Movies" asp-action="Import">Import Movies</a>
+        </div>
         <form method="get" asp-action="Index" class="d-inline-block">
             <label for="pageSize" class="me-2">Page size:</label>
             <select id="pageSize" name="pageSize" class="form-select d-inline-block w-auto" onchange="this.form.submit()">
@@ -20,13 +23,14 @@
                     @if (size == Model.PageSize)
                     {
                         <option value="@size" selected="selected">@size</option>
-                    } else
+                    }
+                    else
                     {
                         <option value="@size">@size</option>
-                    }                    
+                    }
                 }
             </select>
-            <input type="hidden" name="page" value="1" />
+            <input type="hidden" name="page" value="1"/>
         </form>
     </div>
     <table class="table table-hover">
@@ -43,7 +47,11 @@
             @foreach (var movie in Model.Movies)
             {
                 <tr id="movie-row-@movie.Id">
-                    <td>@movie.Title</td>
+                    <td>
+                        <a href="https://www.youtube.com/results?search_query=@Uri.EscapeDataString(movie.Title)+Full+Movie" target="_blank" rel="noopener">
+                            @movie.Title
+                        </a>
+                    </td>
                     <td>@movie.ReleaseDate.ToShortDateString()</td>
                     <td>@movie.Genre</td>
                     <td>@movie.Price.ToString("C")</td>
@@ -75,15 +83,19 @@
         </ul>
     </nav>
 </div>
-
-@if (!string.IsNullOrEmpty(successMessage))
-{
-    <div id="toast" class="toast success" style="display: block;">@successMessage</div>
-}
+<div id="toast"></div>
 
 @section Scripts {
     <script src="~/js/toast-util.js"></script>
     <script>
+        // Show toast if successMessage is present from server
+        @if (!string.IsNullOrEmpty(successMessage))
+        {
+            <text>
+            showToast('@successMessage', 'success');
+            </text>
+        }
+
         async function deleteMovie(movieId, movieTitle) {
             if (confirm(`Are you sure you want to delete the movie "${movieTitle}"?`)) {
                 try {
@@ -95,7 +107,6 @@
                     });
 
                     if (response.ok) {
-                        // Remove the movie row from the table
                         document.getElementById(`movie-row-${movieId}`).remove();
                         showToast(`Movie "${movieTitle}" deleted successfully!`, "success");
                     } else {
@@ -107,13 +118,5 @@
                 }
             }
         }
-
-        // Automatically hide the toast after 3 seconds (for successMessage on page load)
-        const toast = document.getElementById("toast");
-        if (toast) {
-            setTimeout(() => {
-                toast.style.display = "none";
-            }, 3000);
-        }
     </script>
-} 
+}

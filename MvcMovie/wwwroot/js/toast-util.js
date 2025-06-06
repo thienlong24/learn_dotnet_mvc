@@ -1,11 +1,16 @@
 ﻿// Toast utility
-function showToast(message, type) {
-    const toast = document.getElementById("toast");
-    if (!toast) return;
+function showToast(message, type = "success") {
+    let toast = document.getElementById("toast");
+    if (!toast) {
+        toast = document.createElement("div");
+        toast.id = "toast";
+        document.body.appendChild(toast);
+    }
+    toast.className = "toast " + type + " show";
     toast.textContent = message;
-    toast.className = `toast ${type}`;
     toast.style.display = "block";
     setTimeout(() => {
+        toast.className = "toast " + type;
         toast.style.display = "none";
     }, 3000);
 }
@@ -13,7 +18,6 @@ function showToast(message, type) {
 // AJAX form handler for create/edit
 function bindAjaxForm(formSelector, object, onSuccess) {
     const form = document.querySelector(formSelector);
-    const toast = document.getElementById("toast");
     if (!form) return;
 
     form.addEventListener("submit", async (event) => {

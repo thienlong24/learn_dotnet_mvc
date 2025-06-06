@@ -51,13 +51,15 @@ namespace MvcMovie.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Create([Bind("Id,FullName,DateOfBirth,Gender")] Actor actor)
         {
-            if (ModelState.IsValid)
+            if (!ModelState.IsValid)
             {
-                _context.Add(actor);
-                await _context.SaveChangesAsync();
-                return Json(new { id = actor.Id, fullName = actor.FullName });
+                return BadRequest(new { error = "Invalid data" });
             }
-            return BadRequest(new { error = "Invalid data" });
+
+            _context.Add(actor);
+            await _context.SaveChangesAsync();
+            return Json(new { id = actor.Id, fullName = actor.FullName });
+
         }
 
         // GET: Actors/Edit/5
@@ -88,27 +90,28 @@ namespace MvcMovie.Controllers
                 return NotFound();
             }
 
-            if (ModelState.IsValid)
+            if (!ModelState.IsValid)
             {
-                try
-                {
-                    _context.Update(actor);
-                    await _context.SaveChangesAsync();
-                }
-                catch (DbUpdateConcurrencyException)
-                {
-                    if (!ActorExists(actor.Id))
-                    {
-                        return NotFound();
-                    }
-                    else
-                    {
-                        throw;
-                    }
-                }
-                return Json(new { id = actor.Id, fullName = actor.FullName });
+                return BadRequest(new { error = "Invalid data" });
             }
-            return BadRequest(new { error = "Invalid data" });
+
+            try
+            {
+                _context.Update(actor);
+                await _context.SaveChangesAsync();
+            }
+            catch (DbUpdateConcurrencyException)
+            {
+                if (!ActorExists(actor.Id))
+                {
+                    return NotFound();
+                }
+                else
+                {
+                    throw;
+                }
+            }
+            return Json(new { id = actor.Id, fullName = actor.FullName });
         }
 
         // GET: Actors/Delete/5

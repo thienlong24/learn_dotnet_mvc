@@ -1,15 +1,25 @@
 .toast {
     position: fixed;
-    bottom: 20px;
-    right: 20px;
+    top: 24px;
+    right: 24px;
     min-width: 250px;
-    padding: 15px;
-    border-radius: 5px;
+    max-width: 350px;
+    background: #00b7ff;
     color: #fff;
-    font-size: 14px;
-    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
-    z-index: 1000;
-    display: none; /* Hidden by default */
+    padding: 16px 24px;
+    border-radius: 8px;
+    z-index: 9999;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.3s, transform 0.3s;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.2);
+    font-size: 1rem;
+}
+
+.toast.show {
+    opacity: 1;
+    pointer-events: auto;
+    transform: translateY(0);
 }
 
 .toast.success {

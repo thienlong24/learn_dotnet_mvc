@@ -1,6 +1,7 @@
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.EntityFrameworkCore;
 using MvcMovie.Data;
+using OfficeOpenXml;
 using Okta.AspNetCore;
 using Serilog;
 
@@ -43,6 +44,8 @@ builder.Services.AddAuthentication(options =>
     AuthorizationServerId = "default",
     Scope = ["openid", "profile", "email"]
 });
+
+ExcelPackage.License.SetNonCommercialOrganization("My Noncommercial organization");
 
 var app = builder.Build();
 

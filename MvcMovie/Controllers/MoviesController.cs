@@ -3,10 +3,13 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using MvcMovie.Data;
 using MvcMovie.Models;
+using OfficeOpenXml;
+using System.IO;
+using System.Text.Json;
 
 namespace MvcMovie.Controllers;
 
-public class MoviesController : Controller
+public partial class MoviesController : Controller
 {
     private readonly ILogger<MoviesController> _logger;
     private readonly MvcMovieContext _context;
@@ -167,5 +170,116 @@ public class MoviesController : Controller
     public IActionResult Error()
     {
         return View(new ErrorViewModel { RequestId = Activity.Current?.Id ?? HttpContext.TraceIdentifier });
+    }
+
+    // Add these actions to your MoviesController
+    public IActionResult Import()
+    {
+        return View();
+    }
+
+    [HttpPost]
+    [ValidateAntiForgeryToken]
+    public async Task<IActionResult> Import(IFormFile? file)
+    {
+        if (file == null || file.Length == 0)
+        {
+            TempData["Error"] = "Please select a file to import.";
+            return RedirectToAction(nameof(Import));
+        }
+
+        if (!Path.GetExtension(file.FileName).Equals(".xlsx", StringComparison.OrdinalIgnoreCase))
+        {
+            TempData["Error"] = "Please select an Excel file (.xlsx)";
+            return RedirectToAction(nameof(Import));
+        }
+
+        var result = new ImportResult();
+
+        try
+        {
+            using var stream = new MemoryStream();
+            await file.CopyToAsync(stream);
+
+            using var package = new ExcelPackage(stream);
+            var worksheet = package.Workbook.Worksheets[0];
+            var rowCount = worksheet.Dimension.Rows;
+
+            var movies = new List<Movie>();
+
+            // Skip the header row, start from row 2
+            for (var row = 2; row <= rowCount; row++)
+            {
+                try
+                {
+                    var title = worksheet.Cells[row, 1].Value?.ToString()?.Trim();
+                    
+                    // Skip empty rows
+                    if (string.IsNullOrEmpty(title))
+                    {
+                        continue;
+                    }
+
+                    var releaseDateStr = worksheet.Cells[row, 2].Value?.ToString();
+                    var genre = worksheet.Cells[row, 3].Value?.ToString()?.Trim();
+                    var priceStr = worksheet.Cells[row, 4].Value?.ToString();
+
+                    if (!DateTime.TryParse(releaseDateStr, out var releaseDate))
+                    {
+                        throw new Exception("Invalid release date format");
+                    }
+
+                    if (!decimal.TryParse(priceStr, out var price))
+                    {
+                        throw new Exception("Invalid price format");
+                    }
+
+                    var movie = new Movie
+                    {
+                        Title = title,
+                        ReleaseDate = releaseDate,
+                        Genre = genre ?? "Unknown",
+                        Price = price
+                    };
+
+                    // Add basic validation
+                    if (string.IsNullOrEmpty(movie.Title))
+                    {
+                        throw new Exception("Title is required");
+                    }
+
+                    if (movie.Price < 0)
+                    {
+                        throw new Exception("Price cannot be negative");
+                    }
+
+                    movies.Add(movie);
+                    result.SuccessCount++;
+                }
+                catch (Exception ex)
+                {
+                    var title = worksheet.Cells[row, 1].Value?.ToString()?.Trim() ?? "Unknown";
+                    result.Failures.Add((row, title, ex.Message));
+                }
+            }
+
+            // Save successful imports
+            if (movies.Any())
+            {
+                await _context.Movies.AddRangeAsync(movies);
+                await _context.SaveChangesAsync();
+            }
+
+            // Store import results in TempData
+            TempData["ImportSuccess"] = result.SuccessCount;
+            TempData["ImportFailures"] = JsonSerializer.Serialize(result.Failures);
+
+            return RedirectToAction(nameof(Import));
+        }
+        catch (Exception ex)
+        {
+            TempData["Error"] = $"Error processing file: {ex.Message}";
+            return RedirectToAction(nameof(Import));
+        }
     }
 }

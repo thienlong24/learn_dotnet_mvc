@@ -9,6 +9,7 @@
         .ToList();
 }
 <link rel="stylesheet" href="~/css/movies.css" />
+<script src="~/js/toast-util.js"></script>
 
 <div class="container mt-4">
     <h1 class="text-center mb-4">Edit Movie</h1>
@@ -45,15 +46,13 @@
         <button type="submit" class="btn btn-primary">Save</button>
         <a asp-action="Index" class="btn btn-secondary">Back to list</a>
     </form>
+    <div id="toast"></div>
 </div>
 
-<div id="toast" class="toast"></div>
-
-@section Scripts {
-    <script src="~/js/toast-util.js"></script>
+@section Scripts {x
     <script>
         bindAjaxForm("form", "Movie", function(data) {
-            showToast(`Movie updated successfully! Id=${data.id}, Title=${data.title}`, "success");
+            window.location.href = '@Url.Action("Index", "Movies")?successMessage=' + encodeURIComponent('Movie updated successfully!');
         });
     </script>
 }
