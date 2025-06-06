@@ -60,3 +60,7 @@ input::-ms-input-placeholder {
     color: #ecf0f1;
     opacity: 1; /* Ensure full opacity for cross-browser consistency */
 }
+
+.table th a {
+    white-space: nowrap;
+}

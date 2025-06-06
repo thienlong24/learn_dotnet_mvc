@@ -4,15 +4,18 @@ using Microsoft.EntityFrameworkCore;
 using MvcMovie.Data;
 using MvcMovie.Models;
 using OfficeOpenXml;
-using System.IO;
 using System.Text.Json;
+using MvcMovie.Helper;
 
 namespace MvcMovie.Controllers;
 
-public partial class MoviesController : Controller
+public class MoviesController : Controller
 {
     private readonly ILogger<MoviesController> _logger;
     private readonly MvcMovieContext _context;
+    private readonly int[] _allowedPageSizes = [5, 10, 20, 50];
+    private const int DefaultPageSize = 10;
+
 
     public MoviesController(MvcMovieContext context, ILogger<MoviesController> logger)
     {
@@ -20,23 +23,66 @@ public partial class MoviesController : Controller
         _context = context;
     }
 
-    public async Task<IActionResult> Index(int page = 1, int pageSize = 10)
+    public async Task<IActionResult> Index(
+        string sortOrder, 
+        string currentFilter, 
+        string searchString, 
+        int? pageNumber,
+        int? pageSize)
     {
-        var totalMovies = await _context.Movies.CountAsync();
-        var totalPages = (int)Math.Ceiling(totalMovies / (double)pageSize);
+        ViewData["CurrentSort"] = sortOrder;
+        ViewData["TitleSortParam"] = string.IsNullOrEmpty(sortOrder) ? "title_desc" : "";
+        ViewData["DateSortParam"] = sortOrder == "date" ? "date_desc" : "date";
+        ViewData["GenreSortParam"] = sortOrder == "genre" ? "genre_desc" : "genre";
+        ViewData["PriceSortParam"] = sortOrder == "price" ? "price_desc" : "price";
 
-        var movies = await _context.Movies
-            .OrderBy(m => m.Title)
-            .Skip((page - 1) * pageSize)
-            .Take(pageSize)
-            .ToListAsync();
+        if (string.IsNullOrWhiteSpace(searchString))
+        {
+            searchString = currentFilter;
+        }
+        else
+        {
+            pageNumber = 1;
+        }
+
+        ViewData["CurrentFilter"] = searchString;
+        ViewData["CurrentPageSize"] = pageSize ?? DefaultPageSize;
+        ViewData["AllowedPageSizes"] = _allowedPageSizes;
+
+        var movies = from m in _context.Movies
+                    select m;
+
+        if (!String.IsNullOrEmpty(searchString))
+        {
+            movies = movies.Where(s => s.Title.Contains(searchString));
+        }
+
+        movies = sortOrder switch
+        {
+            "title_desc" => movies.OrderByDescending(m => m.Title),
+            "date" => movies.OrderBy(m => m.ReleaseDate),
+            "date_desc" => movies.OrderByDescending(m => m.ReleaseDate),
+            "genre" => movies.OrderBy(m => m.Genre),
+            "genre_desc" => movies.OrderByDescending(m => m.Genre),
+            "price" => movies.OrderBy(m => m.Price),
+            "price_desc" => movies.OrderByDescending(m => m.Price),
+            _ => movies.OrderBy(m => m.Title),
+        };
+
+        int actualPageSize = pageSize.HasValue && _allowedPageSizes.Contains(pageSize.Value) 
+            ? pageSize.Value 
+            : DefaultPageSize;
+
+        var paginatedMovies = await PaginatedList<Movie>.CreateAsync(movies, pageNumber ?? 1, actualPageSize);
 
         var viewModel = new MovieIndexViewModel
         {
-            Movies = movies,
-            PageNumber = page,
-            TotalPages = totalPages,
-            PageSize = pageSize
+            Movies = paginatedMovies,
+            PageIndex = paginatedMovies.PageIndex,
+            TotalPages = paginatedMovies.TotalPages,
+            HasPreviousPage = paginatedMovies.HasPreviousPage,
+            HasNextPage = paginatedMovies.HasNextPage,
+            PageSize = actualPageSize
         };
 
         return View(viewModel);
@@ -239,7 +285,7 @@ public partial class MoviesController : Controller
                         Title = title,
                         ReleaseDate = releaseDate,
                         Genre = genre ?? "Unknown",
-                        Price = price
+                        Price = decimal.ToDouble(price)
                     };
 
                     // Add basic validation

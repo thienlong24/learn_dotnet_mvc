@@ -21,7 +21,6 @@ namespace MvcMovie.Models
 
         [Range(1, 1000000000000)]
         [DataType(DataType.Currency)]
-        [Column(TypeName = "decimal(18, 2)")]
-        public decimal Price { get; set; }
+        public double Price { get; set; }
     }
 }
